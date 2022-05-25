@@ -1,3 +1,5 @@
+
+--데이터 확인--
 SElECT * FROM the_national_police_agency;
 
 --필요데이터 추출--
@@ -6,3 +8,5 @@ SELECT COUNT(연번), SUBSTRING_INDEX(주소, ' ', 2) AS 주소
 FROM  the_national_police_agency
 group by SUBSTRING_INDEX(주소, ' ', 2)
 order by 주소 ASC;
+
+
