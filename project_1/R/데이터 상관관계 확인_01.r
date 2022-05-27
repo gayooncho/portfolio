@@ -31,3 +31,5 @@ install.packages("PerformanceAnalytics")
 library(PerformanceAnalytics)
 chart.Correlation(df_noju, histogram =, pch="+")
 
+# 참조 
+# https://kerpect.tistory.com/152
