@@ -33,3 +33,6 @@ cctv_var_df$cctv_var <- round(cctv_var_df$cctv/cctv_var_df$area)
 cctv_var_df
 
 write.csv(cctv_var_df,"cctv_var_df.csv")
+
+
+
