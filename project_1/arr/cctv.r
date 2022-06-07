@@ -1,7 +1,3 @@
-library(ggplot2)
-library(tidyverse)
-
-file_out <- "C:/project1/cctv.csv"
 
 cctv <- read.csv(file = "C:/project1/cctv.csv", encoding = "euc-kr")
 #=====================================================================
