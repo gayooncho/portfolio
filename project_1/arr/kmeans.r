@@ -46,6 +46,16 @@ vif(df_lm)
 # 다중 회귀분석
 #========================================================
 summary(df_lm)
+
+#========================================================
+# 변수 선택법 - 전진선택법, 후진소거법, 단계별 선택법
+#========================================================
+step(df_lm, scope = list(lower = ~1, upper = ~df$CCTV + df$Oneperson + df$Pub + df$Police), direction = "forward")
+
+step(df_lm, scope = list(lower = ~1, upper = ~df$CCTV + df$Oneperson + df$Pub + df$Police), direction = "backward")
+
+step(df_lm, scope = list(lower = ~1, upper = ~df$CCTV + df$Oneperson + df$Pub + df$Police), direction = "forward")
+
 #========================================================
 # crime에 영향을 미치는 요인은 pub, cctv, oneperson 변수로 확인
 #========================================================
