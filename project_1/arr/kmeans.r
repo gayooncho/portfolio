@@ -71,7 +71,7 @@ step(df_lm, scope = list(lower = ~1, upper = ~df$CCTV + df$Oneperson + df$Pub + 
 df <- subset(df,select = -c(police))
 
 #========================================================
-# 표준편차 0, 평균1로 표준화
+# 표준편차 1, 평균0로 표준화
 #========================================================
 df_scale = scale(df)
 head(df_scale)
@@ -86,7 +86,10 @@ set.seed(123)
 #========================================================
 # 유클리드 거리 / kmeans 군집 / 최소 군집 2개, 최대 군집 10개
 #========================================================
-nbC <- NbClust(df_scale, distance = "euclidean", method = "kmeans", min.nc = 2, max.nc = 10)
+nbC <- NbClust(df_scale, 
+               distance = "euclidean", 
+               method = "kmeans", 
+               min.nc = 2, max.nc = 10)
 
 #========================================================
 # 최적의 군집개수 확인
@@ -98,8 +101,17 @@ table(nbC$Best.nc[1,])
 # 3개 군집으로 분류
 #========================================================
 clustering_km <- kmeans(df_scale, centers = 3, nstart = 15)
+#========================================================
+# 각 케이스별 소속 군집 저장
+#========================================================
 clustering_km$cluster
+#========================================================
+# 최종군집 중심점 저장
+#========================================================
 clustering_km$centers
+#========================================================
+# 각 군집의 크기 저장
+#========================================================
 clustering_km$size
 
 #========================================================
@@ -110,4 +122,59 @@ clusplot(x = df,
         clus = clustering_km$cluster,
         color = TRUE, shade = TRUE,
         labels = 2, lines = 0, main = "Cluster Plot")
+
+##########################################################
+#========================================================
+# Kmeans 군집분석
+#========================================================
+num <- c(1:25) # 자치구 인덱스 
+cluster_df <- clustering_km$cluster # 군집별 구 데이터
+cluster_data <- data.frame(num, cluster_df)
+
+#========================================================
+# 군집별 구 데이터 분리
+#========================================================
+cluster_1 <- cluster_data[cluster_data$cluster_df == 1,]
+cluster_2 <- cluster_data[cluster_data$cluster_df == 2,]
+cluster_3 <- cluster_data[cluster_data$cluster_df == 3,]
+
+#========================================================
+# 기존 데이터베이스(df)에서 cluster별 데이터베이스 만들기
+# num 기준으로 cluster에 변수 추가(one_person, cctv, pub, crime 등)
+#========================================================
+
+df <- data.frame(df, num)
+
+cluster1_df <- df[cluster_1$num,]
+cluster2_df <- df[cluster_2$num,]
+cluster3_df <- df[cluster_3$num,]
+
+#========================================================
+# 첫 번째 군집분석에서 가장 위험지역이라고 판단된 2군집을 다시 Kmeans 군집분석을 통해 군집화
+# Kmeans 
+#========================================================
+cluster2_df <- subset(cluster2_df, select = -c(num))
+cluster2_df_scale = scale(cluster2_df)
+library(NbClust)
+set.seed(123)
+nbC <- NbClust(cluster2_df_scale, 
+               distance = "euclidean", 
+               method = "kmeans", 
+               min.nc = 2, max.nc = 10)
+
+#========================================================
+# 가장 적절한 군집 찾기
+#========================================================
+nbC$Best.nc
+table(nbC$Best.nc[1,])  # 4개
+
+#========================================================
+# 4개 군집으로 분류
+#========================================================
+clustering_km <- kmeans(cluster2_df_scale, centers = 4, nstart = 15)
+clustering_km$cluster
+clustering_km$centers
+clustering_km$size
+
+
 
